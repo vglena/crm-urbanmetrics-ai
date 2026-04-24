@@ -9,10 +9,13 @@ interface ChatControllerDependencies {
 export function createChatController({ agentClient }: ChatControllerDependencies) {
   return async function postChatMessage(request: Request, response: Response) {
     try {
-      const { message, sessionId } = parseChatRequestBody(request.body);
+      const { message, sessionId, selectedExpedienteClave } = parseChatRequestBody(
+        request.body
+      );
       const agentResponse = await agentClient.sendMessage({
         chatInput: message,
-        sessionId
+        sessionId,
+        selectedExpedienteClave
       });
 
       response.json(agentResponse);

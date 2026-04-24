@@ -1,11 +1,13 @@
 export interface ChatRequestBody {
   message: string;
   sessionId: string;
+  selectedExpedienteClave?: string;
 }
 
 export interface AgentRequestBody {
   chatInput: string;
   sessionId: string;
+  selectedExpedienteClave?: string;
 }
 
 export interface AgentResponse {

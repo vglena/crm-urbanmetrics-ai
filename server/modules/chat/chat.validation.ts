@@ -7,6 +7,7 @@ export function parseChatRequestBody(body: unknown): ChatRequestBody {
 
   const message = getTrimmedString(body.message);
   const sessionId = getTrimmedString(body.sessionId);
+  const selectedExpedienteClave = getTrimmedString(body.selectedExpedienteClave);
 
   if (!message) {
     throw new Error("El campo message es obligatorio.");
@@ -16,7 +17,11 @@ export function parseChatRequestBody(body: unknown): ChatRequestBody {
     throw new Error("El campo sessionId es obligatorio.");
   }
 
-  return { message, sessionId };
+  return {
+    message,
+    sessionId,
+    ...(selectedExpedienteClave ? { selectedExpedienteClave } : {})
+  };
 }
 
 function getTrimmedString(value: unknown): string {

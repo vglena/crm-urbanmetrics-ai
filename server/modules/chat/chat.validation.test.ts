@@ -14,6 +14,20 @@ describe("parseChatRequestBody", () => {
     });
   });
 
+  it("acepta clave de expediente seleccionado como contexto opcional", () => {
+    expect(
+      parseChatRequestBody({
+        message: "Cambia el telefono",
+        sessionId: "session-1",
+        selectedExpedienteClave: " EXP-0112 "
+      })
+    ).toEqual({
+      message: "Cambia el telefono",
+      sessionId: "session-1",
+      selectedExpedienteClave: "EXP-0112"
+    });
+  });
+
   it("rechaza mensajes vacios", () => {
     expect(() =>
       parseChatRequestBody({

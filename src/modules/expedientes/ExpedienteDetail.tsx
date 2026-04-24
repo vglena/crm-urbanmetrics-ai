@@ -16,7 +16,7 @@ export function ExpedienteDetail() {
 
   if (!selectedExpediente) {
     return (
-      <section className="flex min-h-0 flex-col bg-slate-50">
+      <section className="flex h-full min-h-0 flex-col bg-slate-50">
         <DetailHeader title="Detalle" />
         <div className="flex flex-1 items-center justify-center px-6">
           <div className="max-w-sm text-center">
@@ -33,7 +33,7 @@ export function ExpedienteDetail() {
   }
 
   return (
-    <section className="min-h-0 overflow-y-auto bg-slate-50">
+    <section className="h-full min-h-0 overflow-y-auto bg-slate-50">
       <DetailHeader title={selectedExpediente.clave} expediente={selectedExpediente} />
       <div className="space-y-4 p-4 sm:p-6">
         <DetailSection title="Datos personales">

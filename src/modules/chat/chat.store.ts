@@ -47,7 +47,11 @@ export const useCrmStore = create<CrmState>((set, get) => ({
     }));
 
     try {
-      const responseText = await sendChatMessage(trimmedMessage, get().sessionId);
+      const responseText = await sendChatMessage({
+        message: trimmedMessage,
+        sessionId: get().sessionId,
+        selectedExpedienteClave: get().selectedExpedienteClave
+      });
       const assistantMessage = createChatMessage("assistant", responseText);
       const parsedResponse = parseAgentExpedienteResponse(responseText);
 

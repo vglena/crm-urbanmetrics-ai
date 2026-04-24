@@ -30,11 +30,26 @@ export class N8nAgentClient implements AgentClient {
 }
 
 function createN8nWebhookBody(body: AgentRequestBody): Record<string, string> {
+  const messageForAgent = createAgentMessage(body);
+
   return {
-    chatInput: body.chatInput,
-    message: body.chatInput,
+    chatInput: messageForAgent,
+    message: messageForAgent,
     sessionId: body.sessionId
   };
+}
+
+function createAgentMessage(body: AgentRequestBody): string {
+  if (!body.selectedExpedienteClave) {
+    return body.chatInput;
+  }
+
+  return [
+    `Contexto de la app: expediente seleccionado ${body.selectedExpedienteClave}.`,
+    "Si el usuario pide actualizar, buscar o modificar un dato sin indicar clave, usa esa clave.",
+    "",
+    `Mensaje del usuario: ${body.chatInput}`
+  ].join("\n");
 }
 
 async function readAgentResponse(response: Response): Promise<unknown> {
