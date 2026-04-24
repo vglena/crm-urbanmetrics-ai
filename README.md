@@ -36,18 +36,20 @@ Base de datos (Airtable / Postgres)
 
 ## 📦 Requisitos previos
 
-Antes de ejecutar el proyecto necesitas:
+Antes de ejecutar el proyecto necesitas tener instalado:
 
-- Node.js >= 18
-- n8n (self-hosted o cloud)
-- Cuenta en OpenAI (API Key)
+- Node.js >= 18 → https://nodejs.org/
+- npm o yarn
+- n8n (local o en la nube) → https://n8n.io/
+- Cuenta OpenAI (API Key) → https://platform.openai.com/
 - Base de datos:
-  - Airtable o Postgres
-- (Opcional) Railway / Docker para backend
+  - Airtable (recomendado para empezar)
+  - o PostgreSQL (para producción)
+- (Opcional) Railway, Vercel o Docker para despliegue
 
 ---
 
-## ⚙️ Instalación
+## ⚙️ Instalación y ejecución
 
 ### 1. Clonar repositorio
 
@@ -58,18 +60,7 @@ cd crm-urbanmetrics-ai
 
 ---
 
-### 2. Configurar variables de entorno
-
-Crea un archivo `.env`:
-
-```env
-OPENAI_API_KEY=your_openai_key
-N8N_WEBHOOK_URL=https://tu-webhook/chat-agent
-```
-
----
-
-### 3. Instalar dependencias
+### 2. Instalar dependencias
 
 ```bash
 npm install
@@ -77,20 +68,38 @@ npm install
 
 ---
 
-### 4. Ejecutar frontend en local
+### 3. Configurar variables de entorno
+
+Crear archivo `.env` en la raíz:
+
+```env
+OPENAI_API_KEY=tu_api_key
+N8N_WEBHOOK_URL=https://tu-n8n/webhook/chat-agent
+```
+
+---
+
+### 4. Ejecutar el frontend
 
 ```bash
 npm run dev
 ```
 
+La app estará disponible en:
+
+```
+http://localhost:5173
+```
+
 ---
 
-## 🔌 Configuración n8n
+## 🔌 Configuración n8n (OBLIGATORIO)
 
-### 1. Webhook
+### 1. Crear Webhook
 
 - Método: `POST`
 - Path: `chat-agent`
+- Modo: Production
 - Response: `Using Respond to Webhook Node`
 
 ---
@@ -99,13 +108,17 @@ npm run dev
 
 Configurar:
 
+- Input del usuario:
+
 ```js
 {{ $json.body.message }}
 ```
 
 ---
 
-### 3. Memoria (Postgres)
+### 3. Memoria (Postgres Chat Memory)
+
+- Session ID:
 
 ```js
 {{ $json.body.sessionId }}
@@ -113,20 +126,34 @@ Configurar:
 
 ---
 
-### 4. Tools
+### 4. Tools del agente
+
+Debes tener conectadas estas herramientas:
 
 - `crear_expediente`
-- `actualizar_expediente`
 - `buscar_expediente`
+- `actualizar_expediente`
+
+Estas herramientas deben apuntar a tu base de datos (Airtable o DB).
 
 ---
 
 ### 5. Respond to Webhook
 
 ```json
-{
-  "message": "{{ $json.output }}"
-}
+{{ { "message": $json.output } }}
+```
+
+---
+
+### 6. Activar workflow
+
+⚠️ IMPORTANTE:
+
+Debes activar el workflow en n8n:
+
+```
+Toggle → Active
 ```
 
 ---
@@ -136,8 +163,10 @@ Configurar:
 ### Endpoint
 
 ```
-POST /webhook/chat-agent
+POST https://tu-n8n/webhook/chat-agent
 ```
+
+---
 
 ### Request
 
@@ -147,6 +176,8 @@ POST /webhook/chat-agent
   "sessionId": "user-1"
 }
 ```
+
+---
 
 ### Response
 
@@ -160,13 +191,15 @@ POST /webhook/chat-agent
 
 ## 💬 Ejemplo de uso
 
-1. Crear expediente:
+### 1. Crear expediente
 
 ```
 crear expediente
 ```
 
-2. Introducir datos:
+---
+
+### 2. Introducir datos
 
 ```
 Nombre: Carlos  
@@ -182,7 +215,9 @@ Habitaciones: 3
 Finalidad: Hipoteca
 ```
 
-3. Resultado:
+---
+
+### 3. Resultado
 
 ```
 Expediente creado: EXP-0111
@@ -192,11 +227,18 @@ Expediente creado: EXP-0111
 
 ## 🧪 Testing
 
-Puedes usar:
+### Con Postman
 
-- Postman
-- Curl
-- Frontend incluido
+```json
+{
+  "message": "crear expediente",
+  "sessionId": "test-1"
+}
+```
+
+---
+
+### Con curl
 
 ```bash
 curl -X POST https://tu-api/webhook/chat-agent \
@@ -208,52 +250,18 @@ curl -X POST https://tu-api/webhook/chat-agent \
 
 ## 🚀 Deploy
 
-### 🔹 Frontend en Netlify (RECOMENDADO)
+Recomendado:
 
-1. Subir repo a GitHub
-2. Ir a https://www.netlify.com
-3. Click en **"Add new site" → "Import from Git"**
-4. Seleccionar el repositorio
-
-Configurar:
-
-- Build command:
-```
-npm run build
-```
-
-- Publish directory:
-```
-dist
-```
-
----
-
-### Variables de entorno en Netlify
-
-Añadir en **Site settings → Environment variables**:
-
-```
-VITE_API_URL=https://n8n-production-989c.up.railway.app/webhook/chat-agent
-```
-
----
-
-### 🔹 Backend (n8n)
-
-Opciones:
-
-- Railway (recomendado)
-- Docker
-- n8n Cloud
+- Backend (n8n) → Railway o Docker
+- Frontend → Vercel o Netlify
 
 ---
 
 ## 🔐 Seguridad
 
-- Usa HTTPS
-- Protege API Keys
-- Añade autenticación si el endpoint es público
+- Usa HTTPS en producción
+- No expongas API Keys
+- Añade autenticación si haces público el endpoint
 
 ---
 
@@ -261,9 +269,10 @@ Opciones:
 
 - [ ] Multiusuario
 - [ ] Autenticación
-- [ ] Dashboard analytics
+- [ ] Dashboard de métricas
 - [ ] Integración con WhatsApp
 - [ ] Roles y permisos
+- [ ] Logs y auditoría
 
 ---
 
